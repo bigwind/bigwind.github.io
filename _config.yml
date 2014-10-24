@@ -11,10 +11,10 @@ markdown: kramdown
 # Themes are encouraged to use these universal variables
 # so be sure to set them if your theme uses them.
 #
-title : 大杂烩
+title : LYF's Blog
 tagline: work life thinking
 author :
-  name : Yuefeng Leng
+  name : Leng Yuefeng
   email : alphaleng@gmail.com
   github : bigwind
   twitter : bigwind87
