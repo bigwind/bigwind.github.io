@@ -9,7 +9,7 @@ tags : [Linux, CentOS, rsync, SELinux]
 
 ## 问题描述
 
-在RHEL或CentOS 6.x上如果希望rsync以守护进程方式运行，并且能够开机启动的话，网上很多文章中介绍的办法是把"/usr/bin/rsync --daemon"添加到/etc/rc.local文件中：
+在RHEL或CentOS 6.x上如果希望rsync以守护进程方式运行，并且能够开机启动的话，网上很多文章中介绍的办法是把*/usr/bin/rsync --daemon*添加到*/etc/rc.local*文件中：
 
     # echo "/usr/bin/rsync --daemon" >> /etc/rc.local
 
@@ -24,8 +24,8 @@ StactExchange上有一个[类似的问题](http://unix.stackexchange.com/questio
 
 遇到这个问题，可能的原因是：
 
-- /etc/rsyncd.conf里配置的模块目录不存在（这个很容易检查出来）
-- 与SELinux有关
+- */etc/rsyncd.conf*里配置的模块目录不存在（这个很容易检查出来）
+- 与**SELinux**有关
 
 检查是否与SELinux有关的方法是先临时关掉SELinux：
 
@@ -43,11 +43,11 @@ StactExchange上有一个[类似的问题](http://unix.stackexchange.com/questio
     rsync_use_cifs --> off
     rsync_use_nfs --> off
 
-我们发现rsync\_client和rsync\_export\_all\_ro这两项的值都是off，这就是问题所在。
+我们发现*rsync\_client*和*rsync\_export\_all\_ro*这两项的值都是**off**，这就是问题所在。
 
 ## 解决办法
 
-问题的解决办法很简单，只需要把rsync\_client和rsync\_export\_all\_ro这两项的值改成on即可。
+问题的解决办法很简单，只需要把*rsync\_client*和*rsync\_export\_all\_ro*这两项的值改成**on**即可。
 
     # setsebool -P rsync_export_all_ro 1
     # setsebool -P rsync_client 1
@@ -59,6 +59,6 @@ StactExchange上有一个[类似的问题](http://unix.stackexchange.com/questio
     rsync_use_cifs --> off
     rsync_use_nfs --> off
 
-关于SELinux的简单介绍可以参考[维基百科](http://en.wikipedia.org/wiki/Security-Enhanced_Linux)。RedHat的[官方文档](https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Security-Enhanced_Linux/)对SELinux作了更详尽的介绍。另外，RedHat的官方文档中也有与rsync相关的配置例子：[⁠Configuration Examples](https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Managing_Confined_Services/sect-Managing_Confined_Services-rsync-Configuration_Examples.html)，有兴趣的童鞋可以研究学习。
+关于SELinux的简单介绍可以参考[维基百科](http://en.wikipedia.org/wiki/Security-Enhanced_Linux)。RedHat的[官方文档](https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Security-Enhanced_Linux/)对SELinux作了更详尽的介绍。另外，RedHat的官方文档中也有与rsync相关的[配置例子](https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Managing_Confined_Services/sect-Managing_Confined_Services-rsync-Configuration_Examples.html)，有兴趣的童鞋可以研究学习。
 
-以上内容仅代表个人观点，如有不对之处，欢迎批评指正。
+**以上内容仅代表个人观点，如有不对之处，欢迎批评指正。**
