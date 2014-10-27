@@ -3,7 +3,7 @@ layout: post
 title : CentOS 6上如何解决rsync @ERROR: chdir failed问题
 category : 系统管理
 tagline: ""
-tags : [Linux, CentOS, rsync, SELinux, ]
+tags : [Linux, CentOS, rsync, SELinux]
 ---
 {% include JB/setup %}
 

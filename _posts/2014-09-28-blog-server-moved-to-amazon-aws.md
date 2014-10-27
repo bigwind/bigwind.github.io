@@ -1,7 +1,7 @@
 ---
 layout: post
 title : 博客服务器迁移到亚马逊AWS
-category : 系统维护
+category : 系统管理
 tagline: ""
 tags : [AWS, Nginx, PHP]
 ---
