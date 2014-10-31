@@ -16,72 +16,62 @@ tags : [AWS, Nginx, PHP]
 
 迁移完后，网站可以访问，但是遇到一个问题，文章页面打不开(404)。这个应该是因为Apache httpd的配置问题导致的。考虑到自己对Apache httpd的配置不熟，比较熟悉的是Nginx的配置，所以我决定把Web服务器换成Nginx，使用Nginx+PHP-FPM的方式。配置步骤如下：
 
-- 停掉Apache httpd：
+1\.停掉Apache httpd：
 
-<pre lang="sh">
-$ sudo service httpd stop
-$ sudo chkconfig httpd off
-</pre>
+    $ sudo service httpd stop
+    $ sudo chkconfig httpd off
 
-- 安装nginx和php-fpm：
+2\.安装nginx和php-fpm：
 
-<pre lang="sh">
-$ sudo yum -y install nginx php-fpm
-$ sudo service nginx start
-$ sudo service php-fpm start
-$ sudo chkconfig nginx on
-$ sudo chkconfig php-fpm on
-</pre>
+    $ sudo yum -y install nginx php-fpm
+    $ sudo service nginx start
+    $ sudo service php-fpm start
+    $ sudo chkconfig nginx on
+    $ sudo chkconfig php-fpm on
 
-- 在浏览器中访问http://blog.sousth.com/，出现nginx的默认页面。
-- 注释掉/etc/nginx/nginx.conf中的server配置。
-- 在/etc/nginx/conf.d中添加blog.conf，内容如下：
+3\.在浏览器中访问<http://blog.sousth.com/>，出现nginx的默认页面。
 
-<pre lang="text">
-server {
-    listen 80;
-    server_name blog.sousth.com;
-    root /var/www/blog;
+4\.注释掉/etc/nginx/nginx.conf中的server配置。
 
-    location / {
-        index index.php index.html index.htm;
+5\.在/etc/nginx/conf.d中添加blog.conf，内容如下：
 
-        if (-f $request_filename) {
-            expires 30d;
-            break;
+    server {
+        listen 80;
+        server_name blog.sousth.com;
+        root /var/www/blog;
+
+        location / {
+            index index.php index.html index.htm;
+            if (-f $request_filename) {
+                expires 30d;
+                break;
+            }
+            if (!-e $request_filename) {
+                rewrite ^(.+)$ /index.php?q=$1 last;
+            }
         }
 
-        if (!-e $request_filename) {
-            rewrite ^(.+)$ /index.php?q=$1 last;
+        location ~ .php$ {
+            fastcgi_pass   localhost:9000;  # port where FastCGI processes were spawned
+            fastcgi_index  index.php;
+            include /etc/nginx/fastcgi_params;
         }
     }
 
-    location ~ .php$ {
-        fastcgi_pass   localhost:9000;  # port where FastCGI processes were spawned
-        fastcgi_index  index.php;
-        include /etc/nginx/fastcgi_params;
-    }
-}
-</pre>
+6\.修改/etc/nginx/fastcgi_params，添加以下配置：
 
-- 修改/etc/nginx/fastcgi_params，添加以下配置：
+    fastcgi_param  SCRIPT_FILENAME    $document_root$fastcgi_script_name;
+    fastcgi_param  PATH_INFO          $fastcgi_path_info;
+    fastcgi_param  PATH_TRANSLATED    $document_root$fastcgi_path_info;
 
-<pre lang="text">
-fastcgi_param  SCRIPT_FILENAME    $document_root$fastcgi_script_name;
-fastcgi_param  PATH_INFO          $fastcgi_path_info;
-fastcgi_param  PATH_TRANSLATED    $document_root$fastcgi_path_info;
-</pre>
+7\.测试配置并重启Nginx：
 
-- 测试配置并重启Nginx：
-
-<pre lang="sh">
-$ sudo nginx -t
-nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
-nginx: configuration file /etc/nginx/nginx.conf test is successful
-$ sudo service nginx restart
-Stopping nginx:                                            [  OK  ]
-Starting nginx:                                            [  OK  ]
-</pre>
+    $ sudo nginx -t
+    nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+    nginx: configuration file /etc/nginx/nginx.conf test is successful
+    $ sudo service nginx restart
+    Stopping nginx:                                            [  OK  ]
+    Starting nginx:                                            [  OK  ]
 
 配置完成后，在浏览器中打开博客主页、文章页面和管理页面，都可以正常访问，大功告成。后续再将DNS服务由HawkHost迁移回GoDaddy。
 
